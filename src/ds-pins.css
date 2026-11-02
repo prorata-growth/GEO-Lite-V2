@@ -1,0 +1,79 @@
+/* Pins the design-system tokens whose values changed upstream back to the
+   values this prototype was designed with, so moving onto the real
+   @prorata-growth/design-system components changes nothing visually. */
+:root {
+  --border-radius-lg: 20px;
+  --background-status-success: #d1fae5;
+  --background-status-warning: #fff0b6;
+  --background-status-error: #fecdcd;
+  --background-interactive-selected: #f4f2ea;
+  --chart-categorical-2: #9b51d2;
+  --chart-categorical-3: #f58975;
+  --chart-categorical-4: #f6c687;
+  --chart-categorical-5: #7eacf1;
+  --chart-categorical-6: #757574;
+  --chart-single-bar: #b6b0ff;
+  --chart-single-bar-hover: #867bff;
+  --background-status-info: #7eacf1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme=light]) {
+    --content-default: #fff;
+    --background-interactive-selected: #ffffff4d;
+    --chart-categorical-2: #b77fe2;
+    --chart-categorical-3: #f58975;
+    --chart-categorical-4: #f6c687;
+    --chart-categorical-5: #7eacf1;
+    --chart-categorical-6: #9e9e9d;
+    --chart-single-bar: #b6b0ff;
+    --chart-single-bar-hover: #9a90ff;
+    --background-action-secondary-content: #fff;
+    --background-action-danger-content: #fff;
+  }
+}
+:root[data-theme=dark] {
+  --content-default: #fff;
+  --background-interactive-selected: #ffffff4d;
+  --chart-categorical-2: #b77fe2;
+  --chart-categorical-3: #f58975;
+  --chart-categorical-4: #f6c687;
+  --chart-categorical-5: #7eacf1;
+  --chart-categorical-6: #9e9e9d;
+  --chart-single-bar: #b6b0ff;
+  --chart-single-bar-hover: #9a90ff;
+  --background-action-secondary-content: #fff;
+  --background-action-danger-content: #fff;
+}
+
+/* Fonts: the library's type tokens point at the prototype's own Haffer (see
+   index.css) rather than the newer faces the library embeds. */
+@font-face {
+  font-family: 'Haffer Mono Pinned';
+  src: url('./assets/fonts/HafferMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Haffer Mono Pinned';
+  src: url('./assets/fonts/HafferMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-family-default: 'Haffer Pinned', ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: 'Haffer Mono Pinned', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+/* Modal titles: the library's Modal now sets its title in a smaller style;
+   this keeps the text style the prototype's dialogs were designed with
+   (accent comfy 600, 24px Medium). Radix gives the title an id, which is
+   what tells it apart from any other heading inside a dialog. */
+[role='dialog'] h2[id^='radix-'] {
+  font-family: var(--text-accent-comfy-600-font-family);
+  font-size: var(--text-accent-comfy-600-font-size);
+  font-weight: var(--text-accent-comfy-600-font-weight);
+  line-height: var(--text-accent-comfy-600-line-height);
+  letter-spacing: var(--text-accent-comfy-600-letter-spacing);
+}

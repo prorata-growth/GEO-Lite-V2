@@ -1,0 +1,4 @@
+# Single-page app: every path serves index.html so deep links don't 404.
+# The flow uses hash routes (#geoscreen etc.) which never hit the server,
+# but this keeps any non-hash path working too.
+/*  /index.html  200

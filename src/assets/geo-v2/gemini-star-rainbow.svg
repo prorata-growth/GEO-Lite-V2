@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <clipPath id="s"><path d="M12 0C12.6 6.5 17.5 11.4 24 12 17.5 12.6 12.6 17.5 12 24 11.4 17.5 6.5 12.6 0 12 6.5 11.4 11.4 6.5 12 0Z"/></clipPath>
+    <radialGradient id="r" cx="12" cy="2" r="9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#EA4335"/><stop offset="1" stop-color="#EA4335" stop-opacity="0"/></radialGradient>
+    <radialGradient id="y" cx="2" cy="12" r="9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FBBC04"/><stop offset="1" stop-color="#FBBC04" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g" cx="12" cy="22" r="9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#34A853"/><stop offset="1" stop-color="#34A853" stop-opacity="0"/></radialGradient>
+  </defs>
+  <g clip-path="url(#s)">
+    <rect width="24" height="24" fill="#4285F4"/>
+    <rect width="24" height="24" fill="url(#r)"/>
+    <rect width="24" height="24" fill="url(#y)"/>
+    <rect width="24" height="24" fill="url(#g)"/>
+  </g>
+</svg>

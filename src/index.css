@@ -1,0 +1,379 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 'Haffer Pinned', not 'Haffer': the design system now embeds its own
+   Haffer faces (a newer cut, plus a real SemiBold). This prototype keeps the
+   Regular and Medium it was designed with — and synthesises 600, as it always
+   has — so moving onto the real library changes nothing visually. See
+   ds-pins.css, which points the library's font tokens here too. */
+@font-face {
+  font-family: 'Haffer Pinned';
+  src:
+    url('./assets/fonts/Haffer-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Haffer Pinned';
+  src:
+    url('./assets/fonts/Haffer-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Always keep room for the scrollbar, so pages that scroll and pages that
+     don't lay out at the same width — the nav bar never shifts sideways when
+     you move between them. */
+  scrollbar-gutter: stable;
+
+  --color-content-default: #0a0a0a;
+  --color-content-inactive: rgba(2, 9, 18, 0.5);
+  --color-border-secondary: rgba(2, 9, 18, 0.1);
+  --color-surface-tertiary: rgba(2, 9, 18, 0.05);
+  --color-button-bg-primary: #020912;
+  --color-button-content-primary: #ffffff;
+  --color-page-bg: #ffffff;
+  --color-card-bg: #ffffff;
+  --color-panel-tint: rgba(214, 214, 214, 0.1);
+  --color-panel-border: #dfdfdf;
+
+  --font-default: 'Haffer Pinned', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark {
+  --color-content-default: #f5f5f5;
+  --color-content-inactive: rgba(245, 245, 245, 0.5);
+  --color-border-secondary: rgba(245, 245, 245, 0.12);
+  --color-surface-tertiary: rgba(245, 245, 245, 0.08);
+  --color-button-bg-primary: #f5f5f5;
+  --color-button-content-primary: #0a0a0a;
+  --color-page-bg: #0a0a0a;
+  --color-card-bg: #141414;
+  --color-panel-tint: rgba(255, 255, 255, 0.03);
+  --color-panel-border: rgba(245, 245, 245, 0.12);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-default);
+  color: var(--color-content-default);
+  background-color: var(--color-page-bg);
+}
+
+button:not(:disabled),
+[role='button']:not(:disabled),
+a {
+  cursor: pointer;
+}
+
+@keyframes skeleton-flicker {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cursor-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+/* ── Download = the browser's own print-to-PDF ──────────────────
+   The promise is "the version you can see", so the page prints as-is,
+   locks included. Only the things that make no sense on paper come out:
+   controls that can't be clicked, the scroll nudge, and the sticky rail's
+   stickiness — pinned, it would reprint on every page. */
+@media print {
+  [data-report='nudge'],
+  [data-report='share-modal'],
+  [data-report='preview-modal'],
+  [data-report='see-example'],
+  [data-report='passed-toggle'],
+  [data-report='download'],
+  [data-report='share'],
+  [data-report='retopic'],
+  [data-report='unlock'],
+  [data-report='demo'],
+  [data-report='run-own'] {
+    display: none !important;
+  }
+
+  [data-report='rail'] {
+    break-inside: avoid;
+  }
+
+  /* sticky positioning repeats the rail on every printed page */
+  [data-report='page'] aside {
+    position: static !important;
+  }
+
+  [data-report='section'] {
+    break-inside: avoid;
+  }
+
+  /* the unveiling has no meaning on paper — print the finished state */
+  [data-report='body'] {
+    height: auto !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+}
+
+/* ── report v2 entrance motion ───────────────────────────────────────────
+   Each keyframe declares only a `from`. The `to` is the element's own
+   resting style, which is the finished, visible state — so if the animation
+   never runs (a backgrounded tab, `prefers-reduced-motion`, an old browser)
+   the content is correct rather than stuck at opacity 0. The previous report
+   drove its entrance from a rAF tween, which froze in a hidden tab and left
+   the whole left column invisible.
+
+   `animation-fill-mode: backwards` holds the `from` during the stagger delay
+   without needing the resting style to lie about where things end up. */
+@keyframes gr-settle {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes gr-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The three section bodies unfurl after all three headers have landed, so the
+   reader sees "Brand visibility / Site health / Competitive intelligence" as a
+   list for a beat before the tables fill in — the point being to show there
+   are three metrics, without a checkmark sequence.
+
+   `grid-template-rows: 0fr → 1fr` animates real content height natively, so
+   nothing has to guess a pixel value. Resting is `1fr` (open), same rule as
+   every other keyframe here: skip the animation and you get the finished
+   state. Needs the wrapper to be `display: grid` and the child to carry
+   `overflow: hidden; min-height: 0`. */
+@keyframes gr-unfurl {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+/* A single light sweep across the rail while the left column is still
+   unfurling, so the panel reads as loading in rather than simply being there.
+   It's an overlay whose resting opacity is 0 — skip the animation and there is
+   simply nothing drawn, no risk of a permanent scrim over the content. */
+@keyframes gr-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-70%);
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(170%);
+  }
+}
+
+/* The example-report dialog's own entrance: a short rise plus a hair of scale,
+   so it reads as arriving rather than blinking on. */
+@keyframes gr-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+
+/* Skeleton shown while the rail's summary is still pending. Fades in, holds,
+   fades out as the real text arrives — resting opacity is 0, so with
+   animations off there is no placeholder at all, just the content. */
+@keyframes gr-skeleton {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The light travelling across each bar. Background-position rather than a
+   moving pseudo-element, so one property animates and nothing reflows. */
+@keyframes gr-skeleton-sweep {
+  from {
+    background-position: 180% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+
+/* stroke-dashoffset, not pathLength — CSS can animate the former, and the
+   resting offset already encodes the real value. */
+@keyframes gr-arc {
+  from {
+    stroke-dashoffset: var(--gr-arc-from);
+  }
+}
+
+/* The score's number, counting up alongside its arc.
+
+   A registered custom property is the only way to tick a number on the
+   document timeline; everything else needs a rAF tween, which this page has
+   already been bitten by (see the note at the top of this block). `<integer>`
+   is what makes it interpolate — an unregistered property would jump straight
+   to the end value.
+
+   The resting style is the real score, so the failure modes are both correct:
+   no @property support resolves `counter-reset: gr-n var(--gr-score)`
+   statically and the number is simply there, and reduced motion kills the
+   animation and leaves the same. */
+@property --gr-score {
+  syntax: '<integer>';
+  initial-value: 0;
+  inherits: false;
+}
+
+@keyframes gr-score {
+  from {
+    --gr-score: 0;
+  }
+}
+
+/* Generated content, because only generated content can print a custom
+   property. The element is aria-hidden and the real figure lives in the
+   ring's own label, so nothing is lost to assistive tech. */
+[data-gr-score]::after {
+  content: counter(gr-score-n);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-gr-motion] {
+    animation: none !important;
+    /* Transitions too — the report preview turns its pages with one, and a
+       page turn is exactly the kind of movement this setting is asking us to
+       drop. The resting state is already the correct page. */
+    transition: none !important;
+  }
+}
+
+/* Touch has no hover, so chrome that reveals on hover would be unreachable.
+   Anything marked as hover-revealed stays put where hover doesn't exist. */
+@media (hover: none) {
+  [data-hover-reveal] {
+    opacity: 1 !important;
+  }
+}
+
+/* The example-report teaser's parting nudge: once the strip has cycled and
+   collapsed, the button it was standing in for blinks once so the eye follows
+   it there. Deliberately small — a pulse, not an alarm. */
+@keyframes gr-flash {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  35% { box-shadow: 0 0 0 3px var(--background-interactive-hover); }
+}
+
+/* Every dialog, on a narrow viewport.
+
+   The design system's Modal sizes are fixed pixel widths — small 400, medium
+   560, large 720 — with no responsive step. On a 390px phone the medium
+   dialog is centred at 560 and hangs 85px off *both* edges: the close button,
+   the copy field and the preview all sit partly off-screen. `small` does not
+   help, because 400 is still wider than the viewport.
+
+   Targeted by role rather than by a prop, because Modal forwards neither
+   `className` nor arbitrary attributes to the element that carries the width
+   — the dialog's only stable handles are `role="dialog"` and a hashed CSS
+   module class. `role` it is, and it is the right scope anyway: this affects
+   every modal in the app, not one of them.
+
+   This is a cap, not a fix. The fix is a responsive size in the design
+   system, which is not this project's to make — raise it upstream. */
+@media (max-width: 767px) {
+  [role='dialog'] {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+
+/* Split screens (an art or colour half beside a content half) on windows
+   wider than 1440px: each half gets a transparent gutter on its outer side,
+   so its text and controls stay inside the centred 1440 column while its
+   colour/background still runs to the window's edge (backgrounds paint under
+   borders). The gutter is 0 at 1440 and below, so nothing changes there. */
+.band-split {
+  container-type: inline-size;
+  --band-gutter: max(0px, calc((100cqw - 1440px) / 2));
+}
+.band-split > :first-child {
+  border-left: var(--band-gutter) solid transparent !important;
+  background-origin: border-box;
+}
+.band-split > :last-child {
+  border-right: var(--band-gutter) solid transparent !important;
+  background-origin: border-box;
+}
+
+/* Enterprise closing band's two buttons. Their colours are set here rather
+   than inline so the hover states can take effect. */
+.ent-cta {
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+.ent-cta:hover { transform: translateY(-1px); }
+.ent-cta:active { transform: translateY(0); }
+.ent-cta-primary {
+  border: none;
+  background-color: var(--background-action-primary-default);
+  color: var(--background-action-primary-content);
+}
+.ent-cta-primary:hover {
+  background-color: color-mix(in srgb, var(--background-action-primary-default) 82%, var(--background-action-primary-content));
+  box-shadow: 0 6px 16px rgba(2, 9, 18, 0.18);
+}
+.ent-cta-arrow { transition: transform 0.18s ease; }
+.ent-cta-primary:hover .ent-cta-arrow { transform: translateX(3px); }
+.ent-cta-secondary {
+  border: 1px solid var(--border-default);
+  background-color: var(--background-surface-raised);
+  color: var(--content-default);
+}
+/* The same hover as the hero's "Get a demo" (the design system's secondary
+   button): a faint grey fill, the light grey stroke kept, no lift. */
+.ent-cta-secondary:hover {
+  background-color: var(--background-surface-sunken);
+  border-color: var(--border-default);
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ent-cta, .ent-cta-arrow { transition: none; }
+  .ent-cta:hover, .ent-cta-primary:hover .ent-cta-arrow { transform: none; }
+}

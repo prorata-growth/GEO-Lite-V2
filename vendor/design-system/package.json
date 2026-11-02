@@ -1,0 +1,29 @@
+{
+  "name": "design-system",
+  "version": "0.9.0",
+  "private": true,
+  "description": "Vendored build of @prorata-growth/design-system (dist-lib) at commit a4204e6. Rebuild: npm run build:lib in the design-system repo, copy dist-lib here.",
+  "type": "module",
+  "main": "./dist-lib/index.js",
+  "types": "./dist-lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist-lib/types/index.d.ts",
+      "import": "./dist-lib/index.js"
+    },
+    "./dist-lib/design-system.css": "./dist-lib/design-system.css"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-popover": "^1.1.23",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "cmdk": "^1.1.1",
+    "motion": "^13.2.0"
+  }
+}
